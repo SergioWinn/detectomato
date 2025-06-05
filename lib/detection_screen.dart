@@ -3,9 +3,11 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/services.dart' show rootBundle;
 import 'home_screen.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper_plus/tflite_flutter_helper_plus.dart';
+import 'package:image/image.dart' as img;
+import 'dart:typed_data';
 
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({super.key});
@@ -40,32 +42,53 @@ class _DetectionScreenState extends State<DetectionScreen> {
   }
 
   Future<void> _loadModel() async {
-    _interpreter = await Interpreter.fromAsset('model_ResNet50.tflite');
-    _labels = await FileUtil.loadLabels('assets/labels.txt');
+    _interpreter = await Interpreter.fromAsset('assets/model_ResNet50.tflite');
+    _labels = await _loadLabels('assets/labels.txt');
     setState(() {
       _modelLoaded = true;
     });
   }
 
+  Future<List<String>> _loadLabels(String assetPath) async {
+    final raw = await rootBundle.loadString(assetPath);
+    return raw.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+  }
+
+  // Preprocessing manual tanpa helper
   Future<void> _predict(File imageFile) async {
-    // 1. Baca gambar dan resize ke 224x224 (atau sesuai input model)
-    final image = ImageProcessorBuilder()
-        .add(ResizeWithCropOrPadOp(224, 224)) // Resize ke 224x224
-        .build()
-        .process(
-          TensorImage.fromFile(imageFile),
-        );
+    // 1. Baca file gambar dan decode
+    final bytes = await imageFile.readAsBytes();
+    img.Image? oriImage = img.decodeImage(bytes);
+    if (oriImage == null) return;
 
-    // 2. Normalisasi (jika model Anda butuh, misal 0-1)
-    var input = image.buffer; // pastikan sesuai input model Anda
+    // 2. Resize ke 224x224
+    img.Image resized = img.copyResize(oriImage, width: 224, height: 224);
 
-    // 3. Siapkan output buffer
-    var output = List.filled(1 * 1000, 0.0).reshape([1, 1000]); // 1000 = jumlah kelas
+    // 3. Normalisasi ke 0-1 dan ubah ke Float32List
+    var input = Float32List(1 * 224 * 224 * 3);
+    int index = 0;
+    for (int y = 0; y < 224; y++) {
+      for (int x = 0; x < 224; x++) {
+        final pixel = resized.getPixel(x, y);
+        final r = (pixel >> 16) & 0xFF;
+        final g = (pixel >> 8) & 0xFF;
+        final b = pixel & 0xFF;
+        input[index++] = r / 255.0;
+        input[index++] = g / 255.0;
+        input[index++] = b / 255.0;
+      }
+    }
 
-    // 4. Run inference
-    _interpreter.run(input, output);
+    // 4. Bentuk input ke [1, 224, 224, 3]
+    var inputTensor = input.reshape([1, 224, 224, 3]);
 
-    // 5. Ambil hasil prediksi
+    // 5. Siapkan output buffer (jumlah kelas = _labels.length)
+    var output = List.filled(1 * _labels.length, 0.0).reshape([1, _labels.length]);
+
+    // 6. Run inference
+    _interpreter.run(inputTensor, output);
+
+    // 7. Ambil hasil prediksi
     int maxIndex = 0;
     double maxScore = output[0][0];
     for (int i = 1; i < output[0].length; i++) {
@@ -128,7 +151,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
           if (step == 0 && _controller != null && _controller!.value.isInitialized)
             Positioned(
               left: (screenWidth - 72) / 2,
-              bottom: 130, // Atur jarak di atas tombol kamera
+              bottom: 130,
               child: GestureDetector(
                 onTap: () async {
                   final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -192,7 +215,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       'Detect Now',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600, // Semi bold
+                        fontWeight: FontWeight.w600,
                         fontSize: 21.6,
                         color: Colors.black,
                       ),
@@ -229,7 +252,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
             ),
             // Gambar tomat (x=15, y=center box)
             Positioned(
-              left: 35 / 393 * screenWidth + 15, // 35 = box left, 15 = margin dalam box
+              left: 35 / 393 * screenWidth + 15,
               top: 646 / 852 * MediaQuery.of(context).size.height +
                   (100 / 852 * MediaQuery.of(context).size.height - 82.3 / 393 * screenWidth) / 2,
               child: Image.asset(
@@ -238,13 +261,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                 height: 82.3 / 393 * screenWidth,
               ),
             ),
-            // Nama penyakit (x=110, y=~20 dari atas box)
+            // Nama penyakit hasil prediksi (DYNAMIC)
             Positioned(
               left: 35 / 393 * screenWidth + 110,
               top: 646 / 852 * MediaQuery.of(context).size.height + 20,
-              child: const Text(
-                'Bacterial Spot',
-                style: TextStyle(
+              child: Text(
+                _resultLabel ?? 'Detecting...',
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -252,7 +275,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                 ),
               ),
             ),
-            // Read more (x=110, y=~55 dari atas box)
+            // Read more (static, bisa Anda buat dinamis jika ingin)
             Positioned(
               left: 35 / 393 * screenWidth + 110,
               top: 646 / 852 * MediaQuery.of(context).size.height + 55,
@@ -354,13 +377,23 @@ class _DetectionScreenState extends State<DetectionScreen> {
               ),
             ),
           ],
-          // Step 1 & 2: Tombol back (arrow style sama seperti arrow_next di onboarding)
+          // Step 1 & 2: Tombol back
           if (step == 1 || step == 2)
             Positioned(
               left: 10 / 393 * screenWidth,
               top: 60 / 852 * MediaQuery.of(context).size.height,
               child: GestureDetector(
-                onTap: () => setState(() => step == 2 ? step = 1 : step = 0),
+                onTap: () {
+                  setState(() {
+                    if (step == 2) {
+                      step = 0;
+                      _resultLabel = null; // reset hasil prediksi
+                    } else {
+                      step = 0;
+                      _resultLabel = null;
+                    }
+                  });
+                },
                 child: Container(
                   width: 40 / 393 * screenWidth,
                   height: 40 / 393 * screenWidth,
@@ -370,7 +403,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.arrow_back_ios_new_rounded, // style sama seperti arrow_next
+                      Icons.arrow_back_ios_new_rounded,
                       color: Colors.black,
                       size: 16,
                     ),
@@ -417,21 +450,6 @@ class _DetectionScreenState extends State<DetectionScreen> {
                   child: CircularProgressIndicator(
                     color: Color(0xFF6DC61A),
                   ),
-                ),
-              ),
-            ),
-          // Result label
-          if (step == 2 && _resultLabel != null)
-            Positioned(
-              left: 35 / 393 * screenWidth + 110,
-              top: 646 / 852 * MediaQuery.of(context).size.height + 20,
-              child: Text(
-                _resultLabel ?? 'Detecting...',
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.black,
                 ),
               ),
             ),
