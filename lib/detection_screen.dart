@@ -50,7 +50,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
   Future<void> _predict(File imageFile) async {
     // 1. Baca gambar dan resize ke 224x224 (atau sesuai input model)
     final image = ImageProcessorBuilder()
-        .add(ResizeOp(224, 224, ResizeMethod.NEAREST_NEIGHBOR))
+        .add(ResizeWithCropOrPadOp(224, 224)) // Resize ke 224x224
         .build()
         .process(
           TensorImage.fromFile(imageFile),
