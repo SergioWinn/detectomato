@@ -1,0 +1,87 @@
+name: detectomato
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.7.2
+  camera: ^0.10.4
+  image_picker: ^1.1.2
+  provider: ^6.1.5
+  url_launcher: ^6.3.1
+  cupertino_icons: ^1.0.8
+  supabase_flutter: ^2.9.0
+  tflite_flutter: ^0.11.0
+  tflite_flutter_helper_plus: ^0.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets\images\main_logo.png
+    - assets\images\tomato_mockup.png
+    - assets\images\tomato_logo.png
+    - assets\images\tomato_profile.png
+    - assets\images\news1.png
+    - assets\images\news2.png
+    - assets\images\news3.png
+    - assets\images\00bce074-967b-4d50-967a-31fdaa35e688___RS_HL 0223_flipTB.jpeg
+    - assets\images\03b7a13c-f5c0-44c4-beed-443841670e9a___RS_Erly.B 8225.jpeg
+    - assets\images\005a2c1f-4e15-49e4-9e5c-61dc3ecf9708___RS_Late.B 5096_flipLR.jpeg
+    - assets\images\014b5e19-7917-4d76-b632-b5dd31d999ec___RS_HL 9640.jpeg
+    - assets\images\014b58ae-091b-408a-ab4a-5a780cd1c3f3___GCREC_Bact.Sp 2971.jpeg
+    - assets\model_ResNet50.tflite
+    - assets\labels.txt
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Poppins-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Poppins-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Poppins-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Poppins-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Poppins-Italic.ttf
+          style: italic
+        - asset: assets/fonts/Poppins-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Poppins-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Poppins-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Poppins-ThinItalic.ttf
+          weight: 100
+          style: italic
