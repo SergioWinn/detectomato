@@ -1,226 +1,237 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class CheckHistoryScreen extends StatelessWidget {
+import 'profile_provider.dart';
+
+class DetectionHistory {
+  final String imageUrl;
+  final String resultLabel;
+  final DateTime detectedAt;
+
+  DetectionHistory({
+    required this.imageUrl,
+    required this.resultLabel,
+    required this.detectedAt,
+  });
+
+  factory DetectionHistory.fromJson(Map<String, dynamic> json) {
+    return DetectionHistory(
+      imageUrl: json['image_url'],
+      resultLabel: json['result_label'],
+      detectedAt: DateTime.parse(json['detected_at']),
+    );
+  }
+}
+
+class CheckHistoryScreen extends StatefulWidget {
   const CheckHistoryScreen({super.key});
+
+  @override
+  State<CheckHistoryScreen> createState() => _CheckHistoryScreenState();
+}
+
+class _CheckHistoryScreenState extends State<CheckHistoryScreen> {
+  late Future<List<DetectionHistory>> _futureHistory;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureHistory = fetchDetectionHistory();
+  }
+
+  Future<List<DetectionHistory>> fetchDetectionHistory() async {
+    final supabase = Supabase.instance.client;
+    final userId = Provider.of<ProfileProvider>(context, listen: false).userId;
+    if (userId.isEmpty) return [];
+    final response = await supabase
+        .from('detection_history')
+        .select()
+        .eq('user_id', userId) // hanya ambil history user ini
+        .order('detected_at', ascending: false);
+
+    if (response == null) return [];
+    return (response as List)
+        .map((e) => DetectionHistory.fromJson(e))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Dummy data
-    final history = [
-      {
-        "month": "MAY",
-        "items": [
-          {"img": "assets/images/00bce074-967b-4d50-967a-31fdaa35e688___RS_HL 0223_flipTB.jpeg", "label": "Healthy"},
-          {"img": "assets/images/03b7a13c-f5c0-44c4-beed-443841670e9a___RS_Erly.B 8225.jpeg", "label": "Early Blight"},
-          {"img": "assets/images/014b5e19-7917-4d76-b632-b5dd31d999ec___RS_HL 9640.jpeg", "label": "Healthy"},
-        ]
-      },
-      {
-        "month": "APRIL",
-        "items": [
-          {"img": "assets/images/014b58ae-091b-408a-ab4a-5a780cd1c3f3___GCREC_Bact.Sp 2971.jpeg", "label": "Bacterial Spot"},
-          {"img": "assets/images/005a2c1f-4e15-49e4-9e5c-61dc3ecf9708___RS_Late.B 5096_flipLR.jpeg", "label": "Late Blight"},
-        ]
-      },
-    ];
-
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
-      body: Stack(
-        children: [
-          // Tombol back
-          Positioned(
-            left: 10 / 393 * screenWidth,
-            top: 60 / 852 * screenHeight,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                width: 40 / 393 * screenWidth,
-                height: 40 / 393 * screenWidth,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6DC61A),
-                  borderRadius: BorderRadius.circular(12),
+      body: FutureBuilder<List<DetectionHistory>>(
+        future: _futureHistory,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final histories = snapshot.data!;
+          // Group by month
+          final Map<String, List<DetectionHistory>> grouped = {};
+          for (var h in histories) {
+            final key = '${h.detectedAt.year}-${h.detectedAt.month.toString().padLeft(2, '0')}';
+            grouped.putIfAbsent(key, () => []).add(h);
+          }
+          final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
+
+          return Stack(
+            children: [
+              // Tombol back
+              Positioned(
+                left: 10 / 393 * screenWidth,
+                top: 60 / 852 * screenHeight,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 40 / 393 * screenWidth,
+                    height: 40 / 393 * screenWidth,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6DC61A),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.black,
+                        size: 16,
+                      ),
+                    ),
+                  ),
                 ),
+              ),
+              // Judul History
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 150 / 852 * screenHeight,
                 child: const Center(
-                  child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.black,
-                    size: 16,
+                  child: Text(
+                    "History",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 40,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          // Judul History
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 150 / 852 * screenHeight,
-            child: const Center(
-              child: Text(
-                "History",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 40,
-                  color: Colors.black,
+              // List history per bulan
+              Positioned.fill(
+                top: 220 / 852 * screenHeight,
+                child: ListView.builder(
+                  padding: EdgeInsets.only(top: 0, bottom: 32),
+                  itemCount: sortedKeys.length,
+                  itemBuilder: (context, monthIdx) {
+                    final key = sortedKeys[monthIdx];
+                    final items = grouped[key]!;
+                    final date = DateTime.parse('${key.split('-')[0]}-${key.split('-')[1]}-01');
+                    final monthName = _monthName(date.month).toUpperCase();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 25 / 393 * screenWidth,
+                            top: monthIdx == 0 ? 0 : 32,
+                            bottom: 8,
+                          ),
+                          child: Text(
+                            monthName,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              color: Colors.black,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ),
+                        ...List.generate(items.length, (index) {
+                          final h = items[index];
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              left: 25 / 393 * screenWidth,
+                              bottom: 16,
+                            ),
+                            child: Stack(
+                              children: [
+                                // Box hijau
+                                Container(
+                                  width: 343 / 393 * screenWidth,
+                                  height: 100 / 852 * screenHeight,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6DC61A),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                // Gambar dari Supabase Storage
+                                Positioned(
+                                  left: 0,
+                                  top: 0,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.network(
+                                      h.imageUrl,
+                                      width: 100 / 852 * screenHeight,
+                                      height: 100 / 852 * screenHeight,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (c, e, s) => Container(
+                                        width: 100 / 852 * screenHeight,
+                                        height: 100 / 852 * screenHeight,
+                                        color: Colors.grey[300],
+                                        child: const Icon(Icons.broken_image),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // Teks label
+                                Positioned(
+                                  left: 125 / 393 * screenWidth,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: SizedBox(
+                                    width: (343 - 125) / 393 * screenWidth,
+                                    height: 100 / 852 * screenHeight,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        h.resultLabel,
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
-          ),
-          // Label "MAY" di posisi 25, 250
-          Positioned(
-            left: 25 / 393 * screenWidth,
-            top: 250 / 852 * screenHeight,
-            child: Text(
-              "MAY",
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Colors.black,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          // Box item untuk setiap history di bulan MAY
-          ...List.generate((history[0]["items"] as List).length, (index) {
-            final item = (history[0]["items"] as List)[index];
-            final String img = item["img"] as String;
-            final String label = item["label"] as String;
-            return Positioned(
-              left: 25 / 393 * screenWidth,
-              top: (280 + index * (100 + 16)) / 852 * screenHeight,
-              child: Stack(
-                children: [
-                  // Box hijau
-                  Container(
-                    width: 343 / 393 * screenWidth,
-                    height: 100 / 852 * screenHeight,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6DC61A),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  // Gambar (di atas box, mepet kiri)
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        img,
-                        height: 100 / 852 * screenHeight,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // Teks (x=125 terhadap box)
-                  Positioned(
-                    left: 125 / 393 * screenWidth,
-                    top: 0,
-                    bottom: 0,
-                    child: SizedBox(
-                      width: (343 - 125) / 393 * screenWidth,
-                      height: 100 / 852 * screenHeight,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          label,
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-          // Label "APRIL" dan history-nya (posisi di bawah list MAY)
-          Positioned(
-            left: 25 / 393 * screenWidth,
-            top: (250 + 32 + (history[0]["items"] as List).length * (100 + 16)) / 852 * screenHeight,
-            child: Text(
-              "APRIL",
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Colors.black,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          // Box item untuk setiap history di bulan APRIL
-          ...List.generate((history[1]["items"] as List).length, (index) {
-            final item = (history[1]["items"] as List)[index];
-            final String img = item["img"] as String;
-            final String label = item["label"] as String;
-            // Hitung posisi y APRIL: mulai setelah semua item MAY + jarak 32
-            final double aprilStartY = (280 + (history[0]["items"] as List).length * (100 + 16) + 32);
-            return Positioned(
-              left: 25 / 393 * screenWidth,
-              top: (aprilStartY + index * (100 + 16)) / 852 * screenHeight,
-              child: Stack(
-                children: [
-                  // Box hijau
-                  Container(
-                    width: 343 / 393 * screenWidth,
-                    height: 100 / 852 * screenHeight,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6DC61A),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  // Gambar (di atas box, mepet kiri)
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        img,
-                        height: 100 / 852 * screenHeight,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // Teks (x=125 terhadap box)
-                  Positioned(
-                    left: 125 / 393 * screenWidth,
-                    top: 0,
-                    bottom: 0,
-                    child: SizedBox(
-                      width: (343 - 125) / 393 * screenWidth,
-                      height: 100 / 852 * screenHeight,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          label,
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+            ],
+          );
+        },
       ),
     );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
   }
 }

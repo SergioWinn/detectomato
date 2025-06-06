@@ -8,6 +8,9 @@ import 'home_screen.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'dart:typed_data';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import 'profile_provider.dart';
 
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({super.key});
@@ -26,6 +29,20 @@ class _DetectionScreenState extends State<DetectionScreen> {
   late List<String> _labels;
   bool _modelLoaded = false;
   String? _resultLabel;
+
+  final Map<String, String> _diseaseInfo = {
+    'Bacterial Spot': 'To manage Bacterial Spot, infected plants and plant debris should be promptly removed and destroyed to prevent further spread. It is essential to apply copper-based fungicides regularly, especially during humid or rainy conditions. Using disease-free seeds and resistant tomato varieties can significantly reduce the risk. Crop rotation is recommended, avoiding planting tomatoes or peppers in the same location for at least two years. Additionally, overhead watering should be minimized to reduce leaf wetness, which facilitates bacterial spread.',
+    'Early Blight': 'Effective treatment of Early Blight involves removing infected leaves and avoiding watering from above, which can spread spores. Fungicides containing chlorothalonil, mancozeb, or copper compounds should be applied early in the season as a preventive measure. Planting resistant varieties and practicing crop rotation also help control the disease. Applying mulch around the base of the plants can prevent soil from splashing onto leaves, and ensuring adequate spacing improves air circulation, which discourages fungal growth.',
+    'Late Blight': 'Late Blight requires immediate action; infected plants must be destroyed as soon as symptoms appear. Fungicides containing mefenoxam or fluopicolide are effective treatments. Farmers should avoid planting tomatoes near potatoes, which can also host the disease. Monitoring weather conditions and applying protective fungicides before an outbreak can reduce damage. Choosing late blight-resistant tomato cultivars further helps in managing this severe disease.',
+    'Leaf Mold': 'Leaf Mold thrives in humid conditions, so improving ventilation and reducing humidity is crucial, especially in greenhouses or dense plantings. Sulfur or copper-based fungicides should be applied preventively. Watering at the base of the plant helps keep foliage dry, and removing affected leaves limits the spread. Cultivating resistant tomato varieties is also an effective long-term strategy.',
+    'Septoria leaf spot': 'Managing Septoria Leaf Spot involves removing infected foliage and avoiding overhead watering. Applying fungicides such as chlorothalonil or mancozeb can control the spread. Good cultural practices like proper plant spacing, crop rotation, and using clean seeds help minimize infection. Mulching around the base of plants also prevents fungal spores from splashing onto lower leaves from the soil.',
+    'Spider mites Two-spotted spider mite': 'Spider mites can be controlled by spraying plants with water to dislodge them and increase humidity, which they dislike. Insecticidal soaps or specific miticides can be used if infestations become severe. Introducing natural predators like ladybugs or predatory mites is also effective. Severely infested leaves should be removed, and nitrogen fertilization should be moderated since excess nitrogen encourages mite populations.',
+    'Target Spot': 'For Target Spot, it is important to remove infected plant parts and maintain cleanliness in the garden or farm. Preventive fungicides such as azoxystrobin or chlorothalonil can be applied to protect healthy leaves. Ensuring good air circulation through proper spacing and pruning, rotating crops, and watering at the soil level are essential practices to manage the disease effectively.',
+    'Tomato Yellow Leaf Curl Virus': 'TYLCV is a viral disease transmitted by whiteflies, so controlling these insects is critical. Infected plants must be destroyed immediately to prevent the virus from spreading. Using insect-proof netting, reflective mulches, and resistant varieties can greatly reduce incidence. Farmers should avoid planting tomatoes near previously infected areas and monitor crops closely for signs of infestation.',
+    'Tomato mosaic virus': 'Tomato Mosaic Virus spreads through contact, so sanitation is key. Infected plants should be removed and tools must be disinfected with a bleach solution. Gardeners and farmers should avoid smoking or handling tobacco near tomato plants, as the virus can be carried from cigarettes. Using virus-free seeds and resistant cultivars, along with strict hygiene practices, can effectively reduce infection rates.',
+    'healthy': 'To maintain healthy tomato plants, consistent and preventive care is essential. This includes regular monitoring for signs of disease, practicing crop rotation, ensuring proper plant spacing, and using disease-resistant varieties. Balanced fertilization and watering at the base of the plants help maintain vigor and reduce disease risk. Mulching and proper sanitation further contribute to long-term plant health.',
+    'powdery mildew': 'Powdery Mildew can be controlled by applying sulfur-based or potassium bicarbonate fungicides. It\'s important to prune overcrowded plants to improve airflow and reduce humidity. Watering at the base keeps leaves dry, which discourages fungal growth. Removing infected leaves early and ensuring adequate sunlight also help prevent the disease from spreading.',
+  };
 
   @override
   void initState() {
@@ -101,6 +118,25 @@ class _DetectionScreenState extends State<DetectionScreen> {
     setState(() {
       _resultLabel = _labels.isNotEmpty ? _labels[maxIndex] : 'Class $maxIndex';
     });
+  }
+
+  Future<String?> uploadImageToSupabase(File imageFile) async {
+    final supabase = Supabase.instance.client;
+    final fileName = 'detection_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final storagePath = 'detections/$fileName';
+
+    final bytes = await imageFile.readAsBytes();
+
+    final response = await supabase.storage
+        .from('detectomato.history') // ganti dengan nama bucket Anda
+        .uploadBinary(storagePath, bytes, fileOptions: const FileOptions(upsert: true));
+
+    if (response != null && response.isNotEmpty) {
+      // Dapatkan public URL
+      final publicUrl = supabase.storage.from('detectomato.history').getPublicUrl(storagePath);
+      return publicUrl;
+    }
+    return null;
   }
 
   @override
@@ -204,7 +240,31 @@ class _DetectionScreenState extends State<DetectionScreen> {
                     setState(() {
                       isLoading = true;
                     });
+
                     await _predict(File(_capturedImage!.path));
+                    final imageUrl = await uploadImageToSupabase(File(_capturedImage!.path));
+
+                    // Ambil userId dari ProfileProvider
+                    final userId = Provider.of<ProfileProvider>(context, listen: false).userId;
+                    print('userId yang dikirim: $userId'); // Debug
+
+                    if (userId.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User ID tidak ditemukan. Silakan login ulang.')),
+                      );
+                      setState(() {
+                        isLoading = false;
+                      });
+                      return;
+                    }
+
+                    await Supabase.instance.client.from('detection_history').insert({
+                      'user_id': userId,
+                      'image_url': imageUrl,
+                      'result_label': _resultLabel,
+                      'detected_at': DateTime.now().toIso8601String(),
+                    });
+
                     setState(() {
                       isLoading = false;
                       step = 2;
@@ -294,69 +354,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           width: 320 / 393 * screenWidth,
                           padding: const EdgeInsets.all(24),
                           child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  'Before planting:',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '• Do not plant successive crops of tomatoes on the land or in the same garden; use a 3-year crop rotation.\n'
-                                  '• Do not plant new crops next to those that have the disease; otherwise spread of the disease to the new crop will be rapid and significant.\n'
-                                  '• It is not known for certain whether seed is important in the spread of the fungus. However, hot water treatment has been used as a method of producing seed free from contamination by fungal spores. Seed is treated with water for 25 minutes at exactly 50°C. Note, this is not a method that farmers would use, because of the need for a thermometer. Also, treatment of seed by this method would only be done as a last resort, after other methods have been tried and failed.',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  'During growth:',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '• Remove infected lower leaves as soon as the first three or four fruit trusses (bunches) have been picked.\n'
-                                  '• Do not use overhead irrigation; otherwise, it will create conditions for spore production and infection.',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  'After harvest:',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '• Collect plant remains and burn them, or dig them deeply into the soil.',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              _diseaseInfo[_resultLabel ?? ''] ?? 'No information available.',
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ),

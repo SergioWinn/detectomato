@@ -295,6 +295,9 @@ class _SignInScreenState extends State<SignInScreen> {
       profileProvider.updateUsername(username);
       profileProvider.updateBiodata(biodata);
 
+      // Tambahkan baris ini agar userId terisi!
+      await profileProvider.fetchUserProfile();
+
       // Navigasi ke HomeScreen
       if (mounted) {
         Navigator.pushReplacement(

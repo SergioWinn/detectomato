@@ -367,9 +367,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       // Update ProfileProvider
-      Provider.of<ProfileProvider>(context, listen: false).updateEmail(email);
-      Provider.of<ProfileProvider>(context, listen: false).updateUsername(username);
-      Provider.of<ProfileProvider>(context, listen: false).updateBiodata('I love tomatoes!');
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      profileProvider.updateEmail(email);
+      profileProvider.updateUsername(username);
+      profileProvider.updateBiodata('I love tomatoes!');
+
+      // Tambahkan baris ini agar userId terisi!
+      await profileProvider.fetchUserProfile();
 
       // Navigasi ke HomeScreen
       if (mounted) {

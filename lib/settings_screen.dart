@@ -103,22 +103,6 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            bottom: 50 / 852 * screenHeight,
-            left: 50 / 393 * screenWidth,
-            right: 50 / 393 * screenWidth,
-            child: ElevatedButton(
-              onPressed: () async {
-                Provider.of<ProfileProvider>(context, listen: false).reset();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-                  (route) => false,
-                );
-              },
-              child: const Text('Logout'),
-            ),
-          ),
         ],
       ),
     );

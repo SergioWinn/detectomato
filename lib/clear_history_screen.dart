@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 import 'settings_screen.dart';
+import 'profile_provider.dart';
+
+Future<void> clearUserHistoryManual(BuildContext context) async {
+  final userId = Provider.of<ProfileProvider>(context, listen: false).userId;
+  if (userId.isEmpty) return;
+  final supabase = Supabase.instance.client;
+  await supabase
+      .from('detection_history')
+      .delete()
+      .eq('user_id', userId);
+}
 
 class ClearHistoryScreen extends StatelessWidget {
   const ClearHistoryScreen({super.key});
@@ -70,8 +84,8 @@ class ClearHistoryScreen extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                onPressed: () {
-                  // Navigasi ke HomeScreen dan hapus semua halaman sebelumnya
+                onPressed: () async {
+                  await clearUserHistoryManual(context);
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
