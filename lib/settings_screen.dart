@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'check_history_screen.dart'; // Tambahkan import ini di atas
 import 'clear_history_screen.dart';
 import 'help_screen.dart';
-import 'onboarding_screen.dart'; // atau sign_in_screen.dart
-import 'package:provider/provider.dart';
-import 'profile_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
