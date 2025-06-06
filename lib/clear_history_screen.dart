@@ -22,6 +22,7 @@ class ClearHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
@@ -55,14 +56,14 @@ class ClearHistoryScreen extends StatelessWidget {
             left: 0,
             right: 0,
             top: 279 / 852 * screenHeight,
-            child: const Center(
+            child: Center(
               child: Text(
                 "Are you sure to clear\nyour history?",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
-                  fontSize: 30,
+                  fontSize: responsiveFont(30),
                   color: Colors.black,
                 ),
               ),
@@ -91,12 +92,12 @@ class ClearHistoryScreen extends StatelessWidget {
                     (route) => false,
                   );
                 },
-                child: const Text(
+                child: Text(
                   "Yes",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w700,
-                    fontSize: 20,
+                    fontSize: responsiveFont(20),
                     color: Colors.black,
                   ),
                 ),
@@ -126,12 +127,12 @@ class ClearHistoryScreen extends StatelessWidget {
                     (route) => route.isFirst,
                   );
                 },
-                child: const Text(
+                child: Text(
                   "No",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w700,
-                    fontSize: 20,
+                    fontSize: responsiveFont(20),
                     color: Colors.black,
                   ),
                 ),

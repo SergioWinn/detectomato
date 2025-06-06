@@ -8,6 +8,7 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
@@ -41,13 +42,13 @@ class HelpScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   "Support & Feedback",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w700,
-                    fontSize: 28,
+                    fontSize: responsiveFont(28),
                     color: Colors.black,
                   ),
                 ),
@@ -59,7 +60,7 @@ class HelpScreen extends StatelessWidget {
                     color: const Color(0xFF6DC61A),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -67,7 +68,7 @@ class HelpScreen extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                          fontSize: responsiveFont(18),
                           color: Colors.black,
                         ),
                       ),
@@ -76,7 +77,7 @@ class HelpScreen extends StatelessWidget {
                         "Hubungi kami di support.detectomato@gmail.com\natau klik tombol di bawah untuk mengirim feedback.",
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 16,
+                          fontSize: responsiveFont(16),
                           color: Colors.black,
                         ),
                       ),
@@ -109,12 +110,12 @@ class HelpScreen extends StatelessWidget {
                         );
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       "Send Feedback",
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w700,
-                        fontSize: 18,
+                        fontSize: responsiveFont(18),
                         color: Colors.black,
                       ),
                     ),

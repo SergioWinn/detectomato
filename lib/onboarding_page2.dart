@@ -7,6 +7,9 @@ class OnboardingPage2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
       body: Stack(
@@ -15,11 +18,11 @@ class OnboardingPage2 extends StatelessWidget {
             left: 35 / 393 * MediaQuery.of(context).size.width,
             right: 35 / 393 * MediaQuery.of(context).size.width,
             top: 150 / 852 * MediaQuery.of(context).size.height,
-            child: const Text(
+            child: Text(
               'Instant Disease Detection',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 40,
+                fontSize: responsiveFont(40),
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
                 height: 50 / 40, // Line height dihitung relatif terhadap font size
@@ -32,11 +35,11 @@ class OnboardingPage2 extends StatelessWidget {
             left: 35 / 393 * MediaQuery.of(context).size.width,
             top: 275 / 852 * MediaQuery.of(context).size.height,
             right: 35 / 393 * MediaQuery.of(context).size.width,
-            child: const Text(
+            child: Text(
               'Simply upload a photo of a tomato leaf, and get a diagnosis in seconds.',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 16,
+                fontSize: responsiveFont(16),
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
@@ -68,12 +71,12 @@ class OnboardingPage2 extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
                     'Next',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 12.6,
+                      fontSize: responsiveFont(12.6),
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),

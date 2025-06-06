@@ -148,6 +148,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -270,13 +271,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       step = 2;
                     });
                   },
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Detect Now',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
-                        fontSize: 21.6,
+                        fontSize: responsiveFont(21.6),
                         color: Colors.black,
                       ),
                       textAlign: TextAlign.center,
@@ -327,10 +328,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
               top: 646 / 852 * MediaQuery.of(context).size.height + 20,
               child: Text(
                 _resultLabel ?? 'Detecting...',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: responsiveFont(20),
                   color: Colors.black,
                 ),
               ),
@@ -356,10 +357,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           child: SingleChildScrollView(
                             child: Text(
                               _diseaseInfo[_resultLabel ?? ''] ?? 'No information available.',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 color: Colors.black,
-                                fontSize: 14,
+                                fontSize: responsiveFont(14),
                               ),
                             ),
                           ),
@@ -367,13 +368,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     'read more...',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
-                      fontSize: 16,
+                      fontSize: responsiveFont(16),
                       color: Colors.black,
                     ),
                   ),

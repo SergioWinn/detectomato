@@ -14,27 +14,40 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  int _screenIndex = 1;
 
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
+    _startSplashSequence();
+  }
+
+  void _startSplashSequence() {
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (!mounted) return;
+      setState(() => _screenIndex = 2);
+      Future.delayed(const Duration(milliseconds: 700), () {
+        if (!mounted) return;
+        setState(() => _screenIndex = 3);
+        Future.delayed(const Duration(milliseconds: 700), () {
+          if (!mounted) return;
+          _checkAuthStatus();
+        });
+      });
+    });
   }
 
   Future<void> _checkAuthStatus() async {
-    await Future.delayed(const Duration(seconds: 2));
     try {
       final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
       final email = profileProvider.email;
 
       if (email.isNotEmpty && mounted) {
-        // Sudah login, langsung ke HomeScreen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } else if (mounted) {
-        // Belum login, ke Onboarding
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const OnboardingScreen()),
@@ -50,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  int _screenIndex = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,6 +7,9 @@ class OnboardingPage1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     return Container(
       color: const Color(0xFFDFFDC9),
       child: Stack(
@@ -16,13 +19,13 @@ class OnboardingPage1 extends StatelessWidget {
             right: 35 / 393 * MediaQuery.of(context).size.width,
             top: 150 / 852 * MediaQuery.of(context).size.height,
             child: RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 children: [
                   TextSpan(
                     text: "Welcome to\n",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 40,
+                      fontSize: responsiveFont(40),
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                       height: 50 / 40, // Line height dihitung relatif terhadap font size
@@ -32,7 +35,7 @@ class OnboardingPage1 extends StatelessWidget {
                     text: "Detectomato!",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 40,
+                      fontSize: responsiveFont(40),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
                       color: Colors.black,
@@ -47,11 +50,11 @@ class OnboardingPage1 extends StatelessWidget {
             left: 35 / 393 * MediaQuery.of(context).size.width,
             right: 35 / 393 * MediaQuery.of(context).size.width,
             top: 275 / 852 * MediaQuery.of(context).size.height,
-            child: const Text(
+            child: Text(
               'An intelligent application to detect tomato plant diseases quickly and accurately.',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 16,
+                fontSize: responsiveFont(16),
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
                 height: 20 / 16,
@@ -85,12 +88,12 @@ class OnboardingPage1 extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children:  [
                   Text(
                     'Next',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 12.6,
+                      fontSize: responsiveFont(12.6),
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),

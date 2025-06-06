@@ -33,6 +33,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
@@ -83,9 +84,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Expanded(
                   child: TextField(
                     controller: _usernameController,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 20,
+                      fontSize: responsiveFont(20),
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
@@ -111,9 +112,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Expanded(
                   child: TextField(
                     controller: _biodataController,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 20,
+                      fontSize: responsiveFont(20),
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
@@ -181,12 +182,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return;
                 }
               },
-              child: const Text(
+              child: Text(
                 "Save",
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
-                  fontSize: 20,
+                  fontSize: responsiveFont(20),
                   color: Colors.black,
                 ),
               ),

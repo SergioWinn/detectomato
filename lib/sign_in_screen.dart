@@ -23,6 +23,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
@@ -36,11 +37,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 // Judul "Sign In"
                 Align(
                   alignment: Alignment(0, -1 + (200 / 852) * 2), // Posisi Y dihitung relatif
-                  child: const Text(
+                  child: Text(
                     'Sign In',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 40, // Ukuran font sesuai spesifikasi
+                      fontSize: responsiveFont(40), // Ukuran font sesuai spesifikasi
                       fontWeight: FontWeight.bold, // Bold
                       color: Colors.black, // Warna hitam
                     ),
@@ -54,13 +55,13 @@ class _SignInScreenState extends State<SignInScreen> {
                   top: 275 / 852 * screenHeight, // Posisi Y
                   child: RichText(
                     textAlign: TextAlign.center,
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
                           text: 'Welcome to ',
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 16,
+                            fontSize: responsiveFont(16),
                             fontWeight: FontWeight.w500, // Medium
                             color: Colors.black, // Warna hitam
                           ),
@@ -69,7 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           text: 'Detectomato!',
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 16,
+                            fontSize: responsiveFont(16),
                             fontWeight: FontWeight.bold, // Bold
                             fontStyle: FontStyle.italic, // Italic
                             color: Colors.black, // Warna hitam
@@ -93,17 +94,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress, // Keyboard untuk email
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 16,
+                        fontSize: responsiveFont(16),
                         fontWeight: FontWeight.w500, // Medium
                         color: Colors.black, // Warna hitam untuk input
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Email',
                         hintStyle: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 16,
+                          fontSize: responsiveFont(16),
                           fontWeight: FontWeight.w500, // Medium
                           color: Colors.black, // Warna hitam untuk placeholder
                         ),
@@ -131,17 +132,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: TextField(
                       controller: _passwordController,
                       obscureText: true,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 16,
+                        fontSize: responsiveFont(16),
                         fontWeight: FontWeight.w500, // Medium
                         color: Colors.black, // Warna hitam untuk input
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Password',
                         hintStyle: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 16,
+                          fontSize: responsiveFont(16),
                           fontWeight: FontWeight.w500, // Medium
                           color: Colors.black, // Warna hitam untuk placeholder
                         ),
@@ -162,9 +163,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     top: 520 / 852 * screenHeight,
                     child: Text(
                       _errorMessage,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.red,
-                        fontSize: 14,
+                        fontSize: responsiveFont(14),
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
@@ -179,20 +180,20 @@ class _SignInScreenState extends State<SignInScreen> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       children: [
-                        const TextSpan(
+                        TextSpan(
                           text: "Don't have an account? ",
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 16, // Ukuran font sesuai permintaan
+                            fontSize: responsiveFont(16), // Ukuran font sesuai permintaan
                             fontWeight: FontWeight.w500, // Medium
                             color: Colors.black, // Warna hitam
                           ),
                         ),
                         TextSpan(
                           text: 'Sign up here',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 16, // Ukuran font sesuai permintaan
+                            fontSize: responsiveFont(16), // Ukuran font sesuai permintaan
                             fontWeight: FontWeight.bold, // Bold
                             color: Colors.black, // Warna hitam
                           ),
@@ -238,11 +239,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: Center(
                         child: _isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
-                            : const Text(
+                            : Text(
                                 'Sign In',
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  fontSize: 16,
+                                  fontSize: responsiveFont(16),
                                   fontWeight: FontWeight.bold, // Bold
                                   color: Colors.black, // Warna hitam
                                 ),

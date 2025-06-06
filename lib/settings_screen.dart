@@ -14,6 +14,8 @@ class SettingsScreen extends StatelessWidget {
     double circleSize = 100 / 393 * screenWidth;
     double iconSize = 50.0;
 
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
       body: Stack(
@@ -123,6 +125,8 @@ class _SettingsMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -140,10 +144,10 @@ class _SettingsMenu extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w500,
-              fontSize: 16,
+              fontSize: responsiveFont(16),
               color: Colors.black,
             ),
           ),

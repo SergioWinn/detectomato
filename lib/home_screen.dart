@@ -12,6 +12,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double responsiveFont(double figmaFont) => figmaFont * MediaQuery.of(context).size.width / 393;
 
     // Skala berdasarkan figma 393x852
     double boxWidth = 343 / 393 * screenWidth;
@@ -24,7 +25,7 @@ class HomeScreen extends StatelessWidget {
     double tomatoTop = boxTop + (boxHeight - tomatoSize) / 2;
 
     double textLeft = boxLeft + 115 / 393 * screenWidth;
-    double textFontSize = 32;
+    double textFontSize = responsiveFont(32);
     double textLineHeight = 40 / 32;
 
     // Hitung tinggi total 2 baris teks dengan line height
@@ -52,7 +53,7 @@ class HomeScreen extends StatelessWidget {
     // Posisi dan style judul news
     double newsTitleLeft = 6.95 / 156.38 * newsBoxWidth;
     double newsTitleTop = 93.82 / 139 * newsBoxHeight;
-    double newsTitleFontSize = 11.12;
+    double newsTitleFontSize = responsiveFont(11.12);
     double newsTitleLineHeight = 13.9 / 11.12;
 
     // Posisi dan style read more
@@ -225,7 +226,7 @@ class HomeScreen extends StatelessWidget {
               "News",
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 40,
+                fontSize: responsiveFont(40),
                 fontWeight: FontWeight.w500, // Medium
                 color: Colors.black,
                 height: 1.0,
@@ -347,6 +348,9 @@ class _NewsBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     return Container(
       width: width,
       height: height,
@@ -418,7 +422,7 @@ class _NewsBox extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Container(
-                      width: 320 / 393 * MediaQuery.of(context).size.width,
+                      width: 320 / 393 * screenWidth,
                       padding: const EdgeInsets.all(24),
                       child: SingleChildScrollView(
                         child: Column(
@@ -426,20 +430,20 @@ class _NewsBox extends StatelessWidget {
                           children: [
                             Text(
                               newsTitle,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: responsiveFont(16),
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               _getNewsContent(newsTitle),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 color: Colors.black,
-                                fontSize: 14,
+                                fontSize: responsiveFont(14),
                               ),
                             ),
                           ],
@@ -486,3 +490,4 @@ class _NewsBox extends StatelessWidget {
     }
   }
 }
+

@@ -16,6 +16,8 @@ class ProfileScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     double navbarTop = 787 / 852 * screenHeight;
     double navbarHeight = 65 / 852 * screenHeight;
     double iconSize = 36.0;
@@ -152,9 +154,9 @@ class ProfileScreen extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           username,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 32,
+                            fontSize: responsiveFont(32),
                             fontWeight: FontWeight.w700,
                             fontStyle: FontStyle.italic,
                             color: Colors.black,
@@ -174,9 +176,9 @@ class ProfileScreen extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           context.watch<ProfileProvider>().biodata,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 16,
+                            fontSize: responsiveFont(16),
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                           ),
@@ -269,6 +271,8 @@ class _ProfileMenuBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -286,9 +290,9 @@ class _ProfileMenuBox extends StatelessWidget {
             const SizedBox(width: 20),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 20,
+                fontSize: responsiveFont(20),
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),

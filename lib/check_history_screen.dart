@@ -60,6 +60,7 @@ class _CheckHistoryScreenState extends State<CheckHistoryScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
 
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
@@ -108,13 +109,13 @@ class _CheckHistoryScreenState extends State<CheckHistoryScreen> {
                 left: 0,
                 right: 0,
                 top: 150 / 852 * screenHeight,
-                child: const Center(
+                child: Center(
                   child: Text(
                     "History",
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
-                      fontSize: 40,
+                      fontSize: responsiveFont(40),
                       color: Colors.black,
                     ),
                   ),
@@ -142,10 +143,10 @@ class _CheckHistoryScreenState extends State<CheckHistoryScreen> {
                           ),
                           child: Text(
                             monthName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.w600,
-                              fontSize: 20,
+                              fontSize: responsiveFont(20),
                               color: Colors.black,
                               letterSpacing: 2,
                             ),
@@ -201,10 +202,10 @@ class _CheckHistoryScreenState extends State<CheckHistoryScreen> {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         h.resultLabel,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 20,
+                                          fontSize: responsiveFont(20),
                                           color: Colors.black,
                                         ),
                                       ),

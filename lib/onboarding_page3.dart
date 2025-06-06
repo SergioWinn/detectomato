@@ -6,6 +6,9 @@ class OnboardingPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFont(double figmaFont) => figmaFont * screenWidth / 393;
+
     return Scaffold(
       backgroundColor: const Color(0xFFDFFDC9),
       body: Stack(
@@ -38,11 +41,11 @@ class OnboardingPage3 extends StatelessWidget {
             left: 35 / 393 * MediaQuery.of(context).size.width,
             top: 150 / 852 * MediaQuery.of(context).size.height,
             right: 35 / 393 * MediaQuery.of(context).size.width,
-            child: const Text(
+            child: Text(
               'Ready to Protect Your Plants?',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 40,
+                fontSize: responsiveFont(40),
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
                 height: 50 / 40, // Line height dihitung relatif terhadap font size
@@ -54,13 +57,13 @@ class OnboardingPage3 extends StatelessWidget {
             top: 325 / 852 * MediaQuery.of(context).size.height,
             right: 35 / 393 * MediaQuery.of(context).size.width,
             child: RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 children: [
                   TextSpan(
                     text: "Start using ",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 16,
+                      fontSize: responsiveFont(16),
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
@@ -69,7 +72,7 @@ class OnboardingPage3 extends StatelessWidget {
                     text: "Detectomato",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 16,
+                      fontSize: responsiveFont(16),
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
                       color: Colors.black,
@@ -79,7 +82,7 @@ class OnboardingPage3 extends StatelessWidget {
                     text: " and keep your tomato plants healthy!",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 16,
+                      fontSize: responsiveFont(16),
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
@@ -108,11 +111,11 @@ class OnboardingPage3 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.5), // Corner radius diubah menjadi 15
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Get Started',
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontSize: 18,
+                  fontSize: responsiveFont(18),
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
