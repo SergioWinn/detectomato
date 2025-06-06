@@ -189,32 +189,52 @@ class HomeScreen extends StatelessWidget {
             top: textTop,
             child: SizedBox(
               width: boxWidth - (115 / 393 * screenWidth) - 16,
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Welcome,\n",
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: textFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        height: textLineHeight,
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Welcome,",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: textFontSize,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      height: textLineHeight,
                     ),
-                    TextSpan(
-                      text: context.watch<ProfileProvider>().username,
-                      style: TextStyle(
+                  ),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final username = context.watch<ProfileProvider>().username;
+                      // Cek apakah username terlalu panjang untuk 1 baris
+                      final maxWidth = constraints.maxWidth;
+                      final defaultStyle = TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: textFontSize,
                         fontWeight: FontWeight.w700,
                         fontStyle: FontStyle.italic,
                         color: Colors.black,
                         height: textLineHeight,
-                      ),
-                    ),
-                  ],
-                ),
+                      );
+                      final smallStyle = defaultStyle.copyWith(fontSize: textFontSize * 0.75);
+
+                      // Widget untuk cek lebar username
+                      final textPainter = TextPainter(
+                        text: TextSpan(text: username, style: defaultStyle),
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      )..layout(maxWidth: maxWidth);
+
+                      final useSmallFont = textPainter.didExceedMaxLines;
+
+                      return Text(
+                        username,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: useSmallFont ? smallStyle : defaultStyle,
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

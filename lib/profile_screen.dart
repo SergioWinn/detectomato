@@ -152,15 +152,34 @@ class ProfileScreen extends StatelessWidget {
                       height: 0.55 * 121.6 / 852 * screenHeight,
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          username,
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: responsiveFont(32),
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black,
-                          ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final username = context.watch<ProfileProvider>().username;
+                            final maxWidth = constraints.maxWidth;
+                            final defaultStyle = TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: responsiveFont(32),
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.black,
+                            );
+                            final smallStyle = defaultStyle.copyWith(fontSize: responsiveFont(32) * 0.75);
+
+                            final textPainter = TextPainter(
+                              text: TextSpan(text: username, style: defaultStyle),
+                              maxLines: 1,
+                              textDirection: TextDirection.ltr,
+                            )..layout(maxWidth: maxWidth);
+
+                            final useSmallFont = textPainter.didExceedMaxLines;
+
+                            return Text(
+                              username,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: useSmallFont ? smallStyle : defaultStyle,
+                            );
+                          },
                         ),
                       ),
                     ),
