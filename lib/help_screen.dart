@@ -64,7 +64,7 @@ class HelpScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Ada pertanyaan, saran, atau kendala?",
+                        "Have questions, suggestions, or problem?",
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
@@ -74,7 +74,7 @@ class HelpScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 12),
                       Text(
-                        "Hubungi kami di support.detectomato@gmail.com\natau klik tombol di bawah untuk mengirim feedback.",
+                        "Contact us at support.detectomato@gmail.com\nor click the button below to send feedback.",
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: responsiveFont(16),
