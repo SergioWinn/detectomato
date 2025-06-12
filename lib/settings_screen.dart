@@ -87,7 +87,7 @@ class SettingsScreen extends StatelessWidget {
                   children: [
                     _SettingsMenu(
                       icon: Icons.help,
-                      label: "Help",
+                      label: "Support &\nFeedback",
                       circleSize: circleSize,
                       iconSize: iconSize,
                       onTap: () {
