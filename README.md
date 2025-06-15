@@ -49,14 +49,14 @@ Model CNN dikembangkan dan dilatih menggunakan dataset dari Kaggle:
 ---
 
 ## 📌 Status Proyek
-✅ Deteksi penyakit offline berbasis AI (ResNet50 + TFLite)
-✅ Fitur login, daftar, histori, dan hasil klasifikasi
-🟡 Pengayaan deskripsi penyakit & rekomendasi perawatan (next)
-🟡 Integrasi geolokasi dan notifikasi (pengembangan lanjutan)
+- ✅ Deteksi penyakit offline berbasis AI (ResNet50 + TFLite)
+- ✅ Fitur login, daftar, histori, dan hasil klasifikasi
+- 🟡 Pengayaan deskripsi penyakit & rekomendasi perawatan (next)
+- 🟡 Integrasi geolokasi dan notifikasi (pengembangan lanjutan)
 
 ---
 
 ## 👥 Tim Pengembang
-👨‍💻 Sergio Winnero – AI/Model CNN, Flutter, TensorFlowLite, Backend
-🧪 Samuel Setiawan – Pengujian, Finalisasi
-🎨 Karina Vanya Wardoyo – Pengembang UI/UX
+- 👨‍💻 Sergio Winnero – AI/Model CNN, Flutter, TensorFlowLite, Backend
+- 🧪 Samuel Setiawan – Pengujian, Finalisasi
+- 🎨 Karina Vanya Wardoyo – Pengembang UI/UX
