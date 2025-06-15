@@ -48,50 +48,6 @@ Model CNN dikembangkan dan dilatih menggunakan dataset dari Kaggle:
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi
-
-1. **Clone repositori ini**
-   ```bash
-   git clone https://github.com/SergioWinn/detectomato.git
-   cd detectomato
-   ```
-2. **Install dependensi Flutter**
-   ```bash
-   flutter pub get
-   ```
-3. **Konfigurasi Supabase**
-   Tambahkan file .env berisi:
-   - URL Supabase
-   - API Key (anon/public key)
-4. **Jalankan di emulator atau perangkat fisik**
-   ```bash
-   flutter run
-   ```
-
----
-
-## 📁 Struktur Proyek
-   ```arduino
-      lib/
-   ├── main.dart
-   ├── screens/
-   │   ├── home.dart
-   │   ├── detection.dart
-   │   ├── result.dart
-   │   └── auth/
-   │       ├── login.dart
-   │       └── register.dart
-   ├── services/
-   │   ├── supabase_service.dart
-   │   └── tflite_service.dart
-   ├── models/
-   ├── utils/
-   assets/
-   tflite/
-   ```
-
----
-
 ## 📌 Status Proyek
 ✅ Deteksi penyakit offline berbasis AI (ResNet50 + TFLite)
 ✅ Fitur login, daftar, histori, dan hasil klasifikasi
