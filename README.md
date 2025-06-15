@@ -54,9 +54,11 @@ Model CNN dikembangkan dan dilatih menggunakan dataset dari Kaggle:
    ```bash
    git clone https://github.com/username/detectomato.git
    cd detectomato
+   ```
 2. **Install dependensi Flutter**
    ```bash
    flutter pub get
+   ```
 3. **Konfigurasi Supabase**
    Tambahkan file .env berisi:
    - URL Supabase
@@ -64,3 +66,41 @@ Model CNN dikembangkan dan dilatih menggunakan dataset dari Kaggle:
 4. **Jalankan di emulator atau perangkat fisik**
    ```bash
    flutter run
+   ```
+
+---
+
+## 📁 Struktur Proyek
+   ```arduino
+      lib/
+   ├── main.dart
+   ├── screens/
+   │   ├── home.dart
+   │   ├── detection.dart
+   │   ├── result.dart
+   │   └── auth/
+   │       ├── login.dart
+   │       └── register.dart
+   ├── services/
+   │   ├── supabase_service.dart
+   │   └── tflite_service.dart
+   ├── models/
+   ├── utils/
+   assets/
+   tflite/
+   ```
+
+---
+
+## 📌 Status Proyek
+✅ Deteksi penyakit offline berbasis AI (ResNet50 + TFLite)
+✅ Fitur login, daftar, histori, dan hasil klasifikasi
+🟡 Pengayaan deskripsi penyakit & rekomendasi perawatan (next)
+🟡 Integrasi geolokasi dan notifikasi (pengembangan lanjutan)
+
+---
+
+## 👥 Tim Pengembang
+👨‍💻 Sergio Winnero – AI/Model CNN, Flutter, TensorFlowLite, Backend
+🧪 Samuel Setiawan – Pengujian, Finalisasi
+🎨 Karina Vanya Wardoyo – Pengembang UI/UX
