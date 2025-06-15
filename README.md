@@ -52,7 +52,7 @@ Model CNN dikembangkan dan dilatih menggunakan dataset dari Kaggle:
 
 1. **Clone repositori ini**
    ```bash
-   git clone https://github.com/username/detectomato.git
+   git clone https://github.com/SergioWinn/detectomato.git
    cd detectomato
    ```
 2. **Install dependensi Flutter**
